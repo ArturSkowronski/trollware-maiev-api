@@ -1,10 +1,16 @@
 language: node_js
 env: CI=true
 node_js:
-  - '0.10'
+- '0.10'
 after_script:
-  - npm run coveralls
+- npm run coveralls
 deploy:
   provider: heroku
-  api_key: ...
-  app: trollware
+  api_key:
+    secure: BWNqxMAaArcy+j61ITu9jChgrwdDI7JNTXiKU7XnhwS5K1VVMP9FPYm17/lYdF3KhvknTMdZdBz09w2DpJhOpumkgfsjJ/165uFKUJsvFvN58y/CJq1ZULGhBlyytqXXb/Fpin3pzc2f9Aw3Ztzqa5ImMG4zb9qR+vICLUS4XIg=
+  app: trollware-maiev-api
+  on:
+    repo: ArturSkowronski/trollware-maiev-api
+    branch: develop
+notifications:
+  slack: trollware:qDXa9pKpe8OYYITRGpTlnV9U
