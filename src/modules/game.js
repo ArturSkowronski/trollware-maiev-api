@@ -36,7 +36,7 @@ createGame = function (data, socket) {
   } else {
     log.info("Game created with gameId: " + socket.id);
     gameSession.createGameModel(socket);
-    socket.emit(events.GAME_CREATED, {gameId: socket.id})
+    socket.emit(events.GAME_CREATED, {gameID: socket.id})
   }
 };
 
