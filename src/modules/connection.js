@@ -1,6 +1,5 @@
 var socketio = require('socket.io');
 var events = require('./events');
-var socketWrapper = require('./socket');
 var winston = require('winston');
 var log = new (winston.Logger)({
 	transports: [

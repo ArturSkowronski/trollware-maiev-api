@@ -1,12 +1,11 @@
 var log = require('winston');
 var _ = require('lodash');
+var gameSession = require('./gameSession');
 
 // DEFINE EVENTS
 var events = {}, Game, disconnected, connected, defineEvents, defineEventHandlers, createGameModel;
 
 var createGame, joinGame;
-
-var gameArray = []
 
 Game = function (io) {
   if (!io) {
@@ -31,12 +30,12 @@ defineEventHandlers = function(socket) {
 }
 
 createGame = function (data, socket) {
-  if(findGameById(socket.id)) {
+  if(gameSession.findGameById(socket.id)) {
     log.error("Game " + socket.id + " already created");
     socket.emit(events.GAME_NOT_CREATED, {error: "Already exists"})
   } else {
     log.info("Game created with gameId: " + socket.id);
-    gameArray.push(createGameModel(socket))
+    gameSession.createGameModel(socket);
     socket.emit(events.GAME_CREATED, {gameId: socket.id})
   }
 };
@@ -49,13 +48,13 @@ joinGame = function (data, socket) {
     return;
   } 
 
-  if(!findGameById(data.gameID)) {
+  if(!gameSession.findGameById(data.gameID)) {
     log.error("Game " + data.gameID + " not exists");
     socket.emit(events.GAME_NOT_CREATED, {error: "Game not exists"})
     return;
   }
 
-  if(findPlayerByIdByGame(socket.id, data.gameID)) {
+  if(gameSession.findPlayerByIdByGame(socket.id, data.gameID)) {
     log.error("Already joined");
     socket.emit(events.GAME_NOT_CREATED, {error: "Already joined"})
     return;
@@ -63,24 +62,7 @@ joinGame = function (data, socket) {
 
   socket.join(data.gameID);
   log.info("Player %s joined game %s", socket.id, data.gameID);
-
 };
-
-createGameModel = function (socket) {
-	return {
-		id: socket.id,
-		players: [socket.id]
-	}
-}
-
-findGameById = function (id) {
-	return _.findWhere(gameArray, {id: id})
-}
-
-findPlayerByIdByGame = function (id, game_id) {
-	return _.findWhere(findGameById(game_id).players, {id: id});
-}
-
 
 connected = function (socket) {
   defineEventHandlers(socket);
