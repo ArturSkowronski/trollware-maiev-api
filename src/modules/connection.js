@@ -1,30 +1,42 @@
 var socketio = require('socket.io');
 var events = require('./events');
+var socketWrapper = require('./socket');
 var log = require('winston');
 
-var connection ={}
+var io = {}
 
-exports.initialize = function (app) {
-	connection = socketio(app);	
-	log.info("Socket.io Initialized");
+exports.initialize = function (app){
+  io = socketio(app);	
+  log.info("Socket.io Initialized");
+  return this;
 }
 
-exports.createNamespace = function (app) {
-	connection = socketio(app);	
-	connection.on('connection', connection)
-}
-
-exports.emit = function (symbol, data) {
-	events.validateSymbol(symbol);
-	connection.emit('connection', connection);
-}
-
+exports.io = io;
 exports.defineEvent = function (eventName) {
-	return events.defineEvent(eventName);
+  return events.defineEvent(eventName);
 }
 
-exports.on = function (symbol, callback) {
-	events.validateSymbol(symbol);
-	log.info("Emmit Event '%s'", Symbol.keyFor(symbol));
-	connection.on(Symbol.keyFor(symbol), callback)
+exports.connection = function (connected, disconnected) {
+  io.on('connection',function(socket){
+    log.info("Client connected with socket id: %s", socket.id);
+		
+    var socketWrapper = {id: socket.id};
+
+	socketWrapper.emit = function(symbol, data) {
+		events.validateSymbol(symbol);
+		socket.emit(Symbol.keyFor(symbol), data);
+	};
+
+	socketWrapper.on = function (symbol, callback) {
+		events.validateSymbol(symbol);
+		socket.on(Symbol.keyFor(symbol), function(data){ callback(data, socket) });
+	};
+
+	connected(socketWrapper);	
+	
+	socket.on('disconnect', function () {
+		disconnected(socket);
+		log.info("Client left with socket id: %s", socket.id);
+  	});
+  })
 }
