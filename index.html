@@ -17,12 +17,19 @@
         <script>
 		  var socket = io.connect('http://localhost:5000/');
 		  $(document).ready(function(){
-            socket.on('news', function (data) {
-                socket.emit('my other event', { my: 'data' });
+            socket.on('gameCreated', function (data) {
+                console.log("Game Created")
+                console.log(data)
               });
 
             $('#startGame').click(function(){
-                socket.emit('createGame', { test: 'data' });
+                socket.emit('createGame');
+            })
+
+            $('#joinGame').click(function(){
+                console.log("Emit join game")
+
+                socket.emit('joinGame', {gameID: $("#gameID").val()});
             })
 
           })
@@ -32,14 +39,27 @@
 
         <div class="well">Api Method Tester</div>
         <div class="container">
-        <div class="col-md-2">
-            <button id="startGame" type="button" class="btn btn-default" aria-label="Left Align">
-                <span>Start Game</span>
-            </button>
-        </div>
-        <div class="col-md-7">
-            Start Game
-        </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <button id="startGame" type="button" class="btn btn-default" aria-label="Left Align">
+                        <span>Start Game</span>
+                    </button>
+                </div>
+                <div class="col-md-7">
+                    Start Game
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <input id="gameID">
+                    <button id="joinGame" type="button" class="btn btn-default" aria-label="Left Align">
+                        <span>Join Game</span>
+                    </button>
+                </div>
+                <div class="col-md-7">
+                    Join Game<
+                </div>
+            </div>
         </div>
 
     </body>

@@ -1,7 +1,12 @@
 var socketio = require('socket.io');
 var events = require('./events');
 var socketWrapper = require('./socket');
-var log = require('winston');
+var winston = require('winston');
+var log = new (winston.Logger)({
+	transports: [
+	  new (winston.transports.Console)({ level: 'debug' }),
+	]
+});
 
 var io = {}
 
@@ -18,25 +23,31 @@ exports.defineEvent = function (eventName) {
 
 exports.connection = function (connected, disconnected) {
   io.on('connection',function(socket){
-    log.info("Client connected with socket id: %s", socket.id);
+    log.debug("Client connected with socket id: %s", socket.id);
 		
-    var socketWrapper = {id: socket.id};
+    var socketWrapper = {id: socket.id, _socket: socket};
+
+    socketWrapper.join = function(room) {
+   	    log.debug("Client %s joined to room %s", socket.id, room);
+		socket.join(room)
+	};
 
 	socketWrapper.emit = function(symbol, data) {
 		events.validateSymbol(symbol);
+	    log.debug("Emmiting event " + Symbol.keyFor(symbol) + " to " + socket.id);
 		socket.emit(Symbol.keyFor(symbol), data);
 	};
 
 	socketWrapper.on = function (symbol, callback) {
 		events.validateSymbol(symbol);
-		socket.on(Symbol.keyFor(symbol), function(data){ callback(data, socket) });
+		socket.on(Symbol.keyFor(symbol), function(data){ callback(data, socketWrapper) });
 	};
 
 	connected(socketWrapper);	
 	
 	socket.on('disconnect', function () {
 		disconnected(socket);
-		log.info("Client left with socket id: %s", socket.id);
+		log.debug("Client left with socket id: %s", socket.id);
   	});
   })
 }
