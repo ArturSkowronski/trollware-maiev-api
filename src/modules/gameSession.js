@@ -3,7 +3,7 @@ var log = require('winston');
 
 var gameArray = []
 
-var createGameModel, gameModel, addPlayerToGameModel, findGameById, findPlayerByIdByGame;
+var createGameModel, gameModel, addPlayerToGameModel, findGameById, findPlayerByIdByGame, debugGameSession;
 
 createGameModel = function(socket){
 	gameArray.push(gameModel(socket))
@@ -30,10 +30,7 @@ findPlayerByIdByGame = function (id, game_id) {
 }
 
 removePlayerById = function (id) {
-
 	_.forEach(gameArray, function(game){
-		log.info("Iterating game" + JSON.stringify(game));
-
 		_.remove(game.players, function(player) {
 	  		if(player == id) {
 	  			log.info("Player " + id + " removed from game " + game.id);
@@ -45,8 +42,13 @@ removePlayerById = function (id) {
 	})
 }
 
+debugGameSession = function(){
+	return gameArray;
+}
+
 exports.createGameModel = createGameModel
 exports.findGameById = findGameById
 exports.findPlayerByIdByGame = findPlayerByIdByGame
 exports.addPlayerToGameModel = addPlayerToGameModel
 exports.removePlayerById = removePlayerById
+exports.debugGameSession = debugGameSession

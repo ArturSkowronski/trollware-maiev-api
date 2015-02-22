@@ -7,7 +7,7 @@ var events = {}, Game, disconnected, connected, defineEvents, defineEventHandler
 
 var createGame, joinGame;
 
-Game = function (io) {
+start = function (io) {
   if (!io) {
   	log.error("Game need to be initialized with Socket Session");
   }
@@ -75,4 +75,6 @@ disconnected = function (socket) {
 	gameSession.removePlayerById(socket.id);
 };
 
-module.exports = exports = Game;
+exports.debug = gameSession.debugGameSession;
+exports.start = start;
+
