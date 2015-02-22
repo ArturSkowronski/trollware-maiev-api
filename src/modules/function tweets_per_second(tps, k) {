@@ -1,0 +1,14 @@
+function tweets_per_second(tps, k) {
+
+var current=[];
+for (var i = 0, length = tps.length; i<=length; i++) {
+    var iter = ((i-k) < 0) ? 0 : (i-k) 
+    var big = 0;
+    
+    for (var i1 = i; i1>=iter; i1--) { 
+        if(tps[i1]>big) big = tps[i1];
+    }
+        current.push(big)
+}
+    console.log.apply(null, current)
+}
