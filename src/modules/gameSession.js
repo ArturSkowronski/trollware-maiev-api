@@ -13,12 +13,15 @@ var createGameModel,
 	indexOfGameByGameID,
 	indexOfGameByPlayerID,
 	playerByIDByGameID, 
-	debugGameSession;
+	debugGameSession,
+	targetShot, 
+	resultOfGame;
 
 createGameModel = function(player){
 	gameArray.push(gameModel(player))
 }
 
+///TODO Clojure IT
 gameModel = function (player) {
 	return {
 		id: player.id,
@@ -51,13 +54,36 @@ playerByIDByGameID = function (id, game_id) {
 	});
 }
 
+targetShot = function(playerID) {
+	var shotTarget = gameByPlayerID(playerID).target;
+	var score = {
+		score: shotTarget.score,
+		type: shotTarget.type,
+		playerID: playerID
+	}
+	addScoreToGame(score)
+}
+
+addScoreToGame = function(score) {
+	gameByPlayerID(playerID).score.push(score);
+}
+
+resultOfGame = function(playerID, score) {
+	return _.chain(gameByPlayerID(playerID).score)
+	 .map(function (item) { return item.score;})
+	 .reduce(function(sum,item){
+	 	return sum + item;
+	 }).value();
+}
+
+///TODO Generator? Promise?
 gameLoop = function(playerID){
 	return {
 		start: function(){
 			var gamePromise = Q.defer();
 		    var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
 		    gameSessionLoop.start();
-		    setIntervalX(gameSessionLoop, 5000, 5, gamePromise)
+		    gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID))
 		    gamePromise.promise.then(function(data){
 		    	log.info("We ended");
 		  });
@@ -65,11 +91,12 @@ gameLoop = function(playerID){
 	}	
 }
 
-var setIntervalX = function(gameSessionLoop, delay, repetitions, Q) {
+var gameLoopRounds = function(gameSessionLoop, delay, repetitions, Q, gameSessionObject) {
   var x = 0;
   var intervalID = setInterval(function () {
-     gameSessionLoop.next();
+     gameSessionObject.target = gameSessionLoop.next();
      if (++x === repetitions) {
+     	 gameSessionObject.target = undefined;
          Q.resolve(gameSessionLoop.stop());
          clearInterval(intervalID);
      }
@@ -104,4 +131,5 @@ exports.addPlayerToGameModel = addPlayerToGameModel
 exports.removePlayerById = removePlayerById
 exports.debugGameSession = debugGameSession
 exports.gameLoop = gameLoop
+exports.targetShot = targetShot
 exports.debugGameSession = debugGameSession

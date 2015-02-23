@@ -5,7 +5,7 @@ var log = new (winston.Logger)({
   ]
 });
 
-var targetGenerator, gameLoop;
+var targetGenerator, gameLoop, createTarget, randomizeTarget;
 
 gameLoop = function(gameSession){
 	var gameSessionID = gameSession.id;
@@ -36,6 +36,21 @@ targetGenerator = function *() {
 
 createTarget = function(){
     log.debug("Target Created");
+    return randomizeTarget();
 }
+
+randomizeTarget = function(){
+	//TODO Symbolize IT
+	var typeOfItems = {};
+	typeOfItems.good = "good";
+	typeOfItems.bad = "bad";
+	
+	return {
+		type: typeOfItems.good,
+		score: 1
+	}
+}
+
+
 
 exports.gameLoop = gameLoop;
