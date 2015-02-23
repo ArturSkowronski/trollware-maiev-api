@@ -8,7 +8,6 @@ var log = new (winston.Logger)({
 });
 
 var gameSession = require('./gameSession');
-var gameLoop = require('./gameLoop');
 
 // DEFINE EVENTS
 var events = {}, Game, disconnected, connected, defineEvents, defineEventHandlers, createGameModel, gameStarted;

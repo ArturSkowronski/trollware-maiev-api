@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var log = require('winston');
 var Q = require('q');
+var gameLoopObject = require('./gameLoop');
 
 var gameArray = []
 
@@ -50,14 +51,15 @@ playerByIDByGameID = function (id, game_id) {
 	});
 }
 
-gameLoop = function(player){
+gameLoop = function(playerID){
 	return {
 		start: function(){
 			var gamePromise = Q.defer();
-		    var gameSessionLoop = gameLoop.gameLoop(gameSession.gameByPlayerId(player.id));
-		    setIntervalX(gameSessionLoop, 1000, 5, gamePromise)
+		    var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
+		    gameSessionLoop.start();
+		    setIntervalX(gameSessionLoop, 5000, 5, gamePromise)
 		    gamePromise.promise.then(function(data){
-		    log.info("We ended");
+		    	log.info("We ended");
 		  });
 		}
 	}	
@@ -65,11 +67,11 @@ gameLoop = function(player){
 
 var setIntervalX = function(gameSessionLoop, delay, repetitions, Q) {
   var x = 0;
-  var intervalID = window.setInterval(function () {
+  var intervalID = setInterval(function () {
      gameSessionLoop.next();
      if (++x === repetitions) {
          Q.resolve(gameSessionLoop.stop());
-         window.clearInterval(intervalID);
+         clearInterval(intervalID);
      }
   }, delay);
 };

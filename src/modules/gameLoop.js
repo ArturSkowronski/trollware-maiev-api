@@ -5,17 +5,20 @@ var log = new (winston.Logger)({
   ]
 });
 
-var gameLoop = function(gameSession){
+var targetGenerator, gameLoop;
+
+gameLoop = function(gameSession){
 	var gameSessionID = gameSession.id;
-	
+	var generateTarget = targetGenerator();
+
 	return {
 		start: function() {
 		    log.debug("GameLoop Start");
-			return true;
+			return generateTarget.next().value;
 		},
 		next: function() {
 		    log.debug("GameLoop Next");
-			return targerGenerator().next().value;
+			return generateTarget.next().value;
 		},
 		stop: function() {
 		    log.debug("GameLoop Stop");
@@ -24,7 +27,7 @@ var gameLoop = function(gameSession){
 	}
 }
 
-var targetGenerator = function *() {
+targetGenerator = function *() {
 	while(true){
 	    log.debug("GameLoop Event yielded");
         yield createTarget();
@@ -32,7 +35,7 @@ var targetGenerator = function *() {
 };
 
 createTarget = function(){
-
+    log.debug("Target Created");
 }
 
 exports.gameLoop = gameLoop;
