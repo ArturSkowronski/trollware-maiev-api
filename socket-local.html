@@ -36,6 +36,12 @@
                 socket.emit('joinGame', {gameID: $("#gameID").val()});
             })
 
+            $('#targetShot').click(function(){
+                console.log("Emit join game")
+
+                socket.emit('targetShot');
+            })
+
           })
 		</script>
     </head>
@@ -78,6 +84,17 @@
                 </div>
                 <div class="col-md-7">
                     <p>Start Game</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <input id="gameID" placeholder="insert game id" class="input-md" style="width: 100%">
+                    <button id="targetShot" type="button" class="btn btn-default" style="width: 100%" aria-label="Left Align">
+                        <span>Shoot</span>
+                    </button>
+                </div>
+                <div class="col-md-7">
+                    <p>Shoot</p>
                 </div>
             </div>
             

@@ -82,10 +82,10 @@ joinGame = function (data, socket) {
 /**
  * Event: Target shot by client.
  * 
- * @param {string} data - The title of the book.
+ * @param {string} data - null.
  */
 targetShot = function (data, socket) {
-
+  gameSession.targetShot();
 };
 
 startGame = function (data, socket) {
