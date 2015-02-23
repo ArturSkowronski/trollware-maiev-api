@@ -38,6 +38,7 @@ exports.connection = function (connected, disconnected) {
 	};
 
 	socketWrapper.on = function (symbol, callback) {
+	    log.debug("Player %s Listening on event %s", socket.id, Symbol.keyFor(symbol));
 		events.validateSymbol(symbol);
 		socket.on(Symbol.keyFor(symbol), function(data){ callback(data, socketWrapper) });
 	};

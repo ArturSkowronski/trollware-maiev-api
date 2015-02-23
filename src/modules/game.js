@@ -1,9 +1,17 @@
-var log = require('winston');
+var winston = require('winston');
 var _ = require('lodash');
+
+var log = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)({ level: 'debug' }),
+  ]
+});
+
 var gameSession = require('./gameSession');
+var gameLoop = require('./gameLoop');
 
 // DEFINE EVENTS
-var events = {}, Game, disconnected, connected, defineEvents, defineEventHandlers, createGameModel;
+var events = {}, Game, disconnected, connected, defineEvents, defineEventHandlers, createGameModel, gameStarted;
 
 var createGame, joinGame;
 
@@ -23,21 +31,26 @@ defineEvents = function(io) {
   events.JOIN_GAME = io.defineEvent('joinGame');
   events.GAME_NOT_JOINED = io.defineEvent('gameNotJoined');
   events.GAME_JOINED = io.defineEvent('gameJoined');
+  events.START_GAME = io.defineEvent('startGame');
+  events.TARGET_SHOT = io.defineEvent('targetShot');
 }
 
 defineEventHandlers = function(socket) {
   socket.on(events.CREATE_GAME, createGame);
   socket.on(events.JOIN_GAME, joinGame);
+  socket.on(events.START_GAME, startGame);
+  socket.on(events.TARGET_SHOT, targetShot);
+
 }
 
 createGame = function (data, socket) {
-  if(gameSession.findGameById(socket.id)) {
+  if(gameSession.gameByGameID(socket.id)) {
     log.error("Game " + socket.id + " already created");
-    socket.emit(events.GAME_NOT_CREATED, {error: "Already exists"})
+    socket.emit(events.GAME_NOT_CREATED, {error: "Already exists"});
   } else {
     log.info("Game created with gameId: " + socket.id);
     gameSession.createGameModel(socket);
-    socket.emit(events.GAME_CREATED, {gameID: socket.id})
+    socket.emit(events.GAME_CREATED, {gameID: socket.id});
   }
 };
 
@@ -49,13 +62,13 @@ joinGame = function (data, socket) {
     return;
   } 
 
-  if(!gameSession.findGameById(data.gameID)) {
+  if(!gameSession.gameByGameID(data.gameID)) {
     log.error("Game " + data.gameID + " not exists");
     socket.emit(events.GAME_NOT_JOINED, {error: "Game not exists"})
     return;
   }
 
-  if(gameSession.findPlayerByIdByGame(socket.id, data.gameID).length) {
+  if(gameSession.playerByIDByGameID(socket.id, data.gameID).length) {
     log.error("Already joined");
     socket.emit(events.GAME_NOT_JOINED, {error: "Already joined"})
     return;
@@ -63,9 +76,24 @@ joinGame = function (data, socket) {
 
   socket.join(data.gameID);
   socket.emit(events.GAME_JOINED, {})
-  gameSession.addPlayerToGameModel(socket.id, data.gameID)
+  gameSession.addPlayerToGame(socket.id, data.gameID)
   log.info("Player %s joined game %s", socket.id, data.gameID);
 };
+
+/**
+ * Event: Target shot by client.
+ * 
+ * @param {string} data - The title of the book.
+ */
+targetShot = function (data, socket) {
+
+};
+
+startGame = function (data, socket) {
+  gameSession.gameLoop(socket.id).start();
+};
+
+
 
 connected = function (socket) {
   defineEventHandlers(socket);
@@ -77,4 +105,3 @@ disconnected = function (socket) {
 
 exports.debug = gameSession.debugGameSession;
 exports.start = start;
-
