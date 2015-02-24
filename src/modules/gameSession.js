@@ -1,8 +1,14 @@
 "use strict";
 
 var _ = require("lodash");
-var log = require("winston");
 var Q = require("q");
+var winston = require("winston");
+var log = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)({ level: "debug" })
+  ]
+});
+
 var gameLoopObject = require("./gameLoop");
 
 var gameArray = [];
@@ -153,7 +159,8 @@ gameLoop = function (playerID) {
     start: function () {
       var gamePromise = Q.defer();
       var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
-      gameSessionLoop.start();
+      gameByPlayerID(playerID).target = gameSessionLoop.start();
+      log.debug("Received Target of Type: " + gameSessionObject.target.type);
       gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID));
       gamePromise.promise.then(function () {
         log.info("We ended");
@@ -181,6 +188,8 @@ gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSes
   var x = 0;
   var intervalID = setInterval(function () {
     gameSessionObject.target = gameSessionLoop.next();
+    log.debug("Received Target of Type: " + gameSessionObject.target.type);
+
     if (++x === repetitions) {
       gameSessionObject.target = undefined;
       promise.resolve(gameSessionLoop.stop());
@@ -233,4 +242,5 @@ exports.debugGameSession = debugGameSession;
 exports.indexOfGameByGameID = indexOfGameByGameID;
 exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
+
 exports.targetShot = targetShot;

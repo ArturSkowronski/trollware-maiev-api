@@ -12,29 +12,47 @@ var log = new (winston.Logger)({
 var createTarget,
   randomizeTarget;
 
-var generate = function *() {
+var generate = function* () {
   while (true) {
-    log.debug("GameLoop Event yielded");
+    log.debug("TargetGenerator Event yielded");
     yield createTarget();
   }
 };
 
 createTarget = function () {
+  var target = randomizeTarget();
   log.debug("Target Created");
-  return randomizeTarget();
+  return target;
 };
 
 randomizeTarget = function () {
-  //TODO Symbolize IT
   var typeOfItems = {};
   typeOfItems.good = "good";
   typeOfItems.bad = "bad";
+  var math = random(0,2);
 
-  return {
-    type: typeOfItems.good,
-    score: 1
-  };
+  switch(math) {
+    case 0: 
+      var model = {
+        type: typeOfItems.good,
+        score: 1
+      }
+      log.debug("Generated Good Target");
+      break;
+    case 1:
+      var model = {
+        type: typeOfItems.bad,
+        score: -1
+      }
+      log.debug("Generated Bad Target");
+      break;
+  }
+
+  return model;
 };
 
+var random = function (low, high) {
+  return Math.floor((Math.random() * high));
+}
+
 exports.generate = generate;
-exports.test = 5;
