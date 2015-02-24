@@ -1,8 +1,8 @@
 'use strict';
 
 var targetGenerator = require('../src/modules/targetGenerator.js');
-var assert = require('should');
-var regenerator = require('regenerator');
+
+var expect = require("chai").expect;
 
 describe('targetGenerator', function () {
 
