@@ -1,10 +1,10 @@
 'use strict';
 
-var gulp   = require('gulp');
+var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 
 var paths = {
-  lint: ['./gulpfile.js', './lib/**/*.js'],
+  lint: ['./gulpfile.js', './lib/**/*.js', './src/**/*.js'],
   watch: ['./gulpfile.js', './lib/**', './test/**/*.js', '!test/{temp,temp/**}'],
   tests: ['./test/**/*.js', '!test/{temp,temp/**}'],
   source: ['./lib/*.js']
@@ -20,10 +20,9 @@ if (process.env.CI) {
 
 gulp.task('lint', function () {
   return gulp.src(paths.lint)
-    .pipe(plugins.jshint('.jshintrc'))
-    .pipe(plugins.plumber(plumberConf))
-    .pipe(plugins.jscs())
-    .pipe(plugins.jshint.reporter('jshint-stylish'));
+    .pipe(plugins.eslint())
+    .pipe(plugins.eslint.format())
+    .pipe(plugins.plumber(plumberConf));
 });
 
 gulp.task('istanbul', function (cb) {

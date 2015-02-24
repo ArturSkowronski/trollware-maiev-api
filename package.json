@@ -24,28 +24,41 @@
     "winston": "^0.9.0"
   },
   "devDependencies": {
-    "gulp": "^3.8.8",
-    "gulp-util": "^3.0.1",
-    "gulp-bump": "^0.1.11",
-    "gulp-jscs": "^1.1.2",
-    "gulp-jshint": "^1.8.4",
-    "gulp-mocha": "^1.1.0",
-    "gulp-istanbul": "^0.5.0",
     "coveralls": "^2.11.1",
-    "should": "^4.0.4",
-    "jshint-stylish": "^0.4.0",
+    "gulp": "^3.8.8",
+    "gulp-bump": "^0.1.11",
+    "gulp-eslint": "^0.5.0",
+    "gulp-istanbul": "^0.5.0",
+    "gulp-jscs": "^1.1.2",
     "gulp-load-plugins": "^0.6.0",
-    "gulp-plumber": "^0.6.5"
+    "gulp-mocha": "^1.1.0",
+    "gulp-plumber": "^0.6.5",
+    "gulp-util": "^3.0.1",
+    "should": "^4.0.4"
   },
   "eslintConfig": {
     "env": {
-      "node": true,
+      "node": true
     },
     "rules": {
-       "strict": [2, "global"],
-       "no-unused-vars": [2, {"vars": "all", "args": "after-used"}]
+      "strict": [
+        2,
+        "global"
+      ],
+      "quotes": [
+        0,
+        "double",
+        "avoid-escape"
+      ],
+      "no-unused-vars": [
+        2,
+        {
+          "vars": "all",
+          "args": "after-used"
+        }
+      ]
     },
-    "ecmaFeatures" : {
+    "ecmaFeatures": {
       "generators": true
     }
   },
