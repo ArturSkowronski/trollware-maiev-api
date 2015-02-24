@@ -61,7 +61,7 @@ gameByGameID = function (gameID) {
  * @param {string} playerID - ID of game we want to select.
  */
 gameByPlayerID = function (playerID) {
-  return _.findWhere(gameArray, function (item) {
+  return _.find(gameArray, function (item) {
     return _.includes(item.players, playerID);
   });
 };
@@ -93,7 +93,7 @@ indexOfGameByPlayerID = function (playerID) {
  * @param {string} gameID - ID of game we want to select player for.
  */
 playerByIDByGameID = function (id, gameID) {
-  return _.findWhere(gameByGameID(gameID).players, function (item) {
+  return _.find(gameByGameID(gameID).players, function (item) {
     return item === id;
   });
 };

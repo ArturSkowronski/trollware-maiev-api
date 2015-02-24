@@ -25,11 +25,6 @@ describe('Game Session', function () {
       expect(gameObject).to.have.property('scores').with.length(0);
     });
 
-    it('should return undefined while selectable by Game ID "00000"', function () {
-      var gameObject = $.gameByGameID("00000");
-      expect(gameObject).to.equals(undefined);
-    });
-
     it('should be selectable by Player ID "11111"', function () {
       var gameObject = $.gameByPlayerID("11111");
 
@@ -37,6 +32,19 @@ describe('Game Session', function () {
       expect(gameObject).to.have.property('players').with.length(1);
       expect(gameObject).to.have.property('players').to.include("11111");
       expect(gameObject).to.have.property('scores').with.length(0);
+    });
+
+
+    it('should be undefined while selectable by Game ID "00000"', function () {
+      var gameObject = $.gameByGameID("00000");
+
+      expect(gameObject).to.equals(undefined);
+    });
+
+    it('should be undefined while selectable by Player ID "00000"', function () {
+      var gameObject = $.gameByPlayerID("00000");
+      $.debugGameSession();
+      expect(gameObject).to.equals(undefined);
     });
 
     it('should have index 0 while selected by Game ID "11111"', function () {
