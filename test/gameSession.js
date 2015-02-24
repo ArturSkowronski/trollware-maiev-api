@@ -19,15 +19,20 @@ describe('Game Session', function () {
     it('should be selectable by Game ID "11111"', function () {
       var gameObject = $.gameByGameID("11111");
 
-      expect(gameObject.id).to.equal("11111");
       expect(gameObject).to.have.property('id', "11111");
       expect(gameObject).to.have.property('players').with.length(1);
       expect(gameObject).to.have.property('players').to.include("11111");
       expect(gameObject).to.have.property('scores').with.length(0);
     });
 
+    it('should return undefined while selectable by Game ID "00000"', function () {
+      var gameObject = $.gameByGameID("00000");
+      expect(gameObject).to.equals(undefined);
+    });
+
     it('should be selectable by Player ID "11111"', function () {
       var gameObject = $.gameByPlayerID("11111");
+
       expect(gameObject).to.have.property('id', "11111");
       expect(gameObject).to.have.property('players').with.length(1);
       expect(gameObject).to.have.property('players').to.include("11111");
