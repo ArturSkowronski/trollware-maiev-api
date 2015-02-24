@@ -17,6 +17,7 @@ var events = {},
   defineEventHandlers,
   init,
   startGame,
+  eventPusher,
   targetShot;
 
 var createGame, joinGame;
@@ -39,6 +40,7 @@ defineEvents = function (io) {
   events.GAME_JOINED = io.defineEvent("gameJoined");
   events.START_GAME = io.defineEvent("startGame");
   events.TARGET_SHOT = io.defineEvent("targetShot");
+  events.TARGET_CREATED = io.defineEvent("targetCreated");
 };
 
 defineEventHandlers = function (socket) {
@@ -46,7 +48,6 @@ defineEventHandlers = function (socket) {
   socket.on(events.JOIN_GAME, joinGame);
   socket.on(events.START_GAME, startGame);
   socket.on(events.TARGET_SHOT, targetShot);
-
 };
 
 createGame = function (data, socket) {
@@ -95,8 +96,16 @@ targetShot = function () {
   gameSession.targetShot();
 };
 
+eventPusher = function (socket) {
+  return {
+    passTargetToClients: function (target) {
+      socket.emit(events.TARGET_CREATED, target);
+    }
+  }
+};
+
 startGame = function (data, socket) {
-  gameSession.gameLoop(socket.id).start();
+  gameSession.gameLoop(socket.id, eventPusher(socket)).start();
 };
 
 connected = function (socket) {
