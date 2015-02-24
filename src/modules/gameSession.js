@@ -225,10 +225,12 @@ debugGameSession = function () {
 
 exports.createGameModel = createGameModel;
 exports.gameByGameID = gameByGameID;
+exports.gameByPlayerID = gameByPlayerID;
 exports.playerByIDByGameID = playerByIDByGameID;
 exports.addPlayerToGame = addPlayerToGame;
 exports.removePlayerById = removePlayerById;
 exports.debugGameSession = debugGameSession;
+exports.indexOfGameByGameID = indexOfGameByGameID;
+exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
 exports.targetShot = targetShot;
-exports.debugGameSession = debugGameSession;
