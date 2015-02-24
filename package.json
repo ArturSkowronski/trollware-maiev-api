@@ -37,6 +37,18 @@
     "gulp-load-plugins": "^0.6.0",
     "gulp-plumber": "^0.6.5"
   },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+    },
+    "rules": {
+       "strict": [2, "global"],
+       "no-unused-vars": [2, {"vars": "all", "args": "after-used"}]
+    },
+    "ecmaFeatures" : {
+      "generators": true
+    }
+  },
   "scripts": {
     "start": "node --harmony --use_strict --harmony_generators index.js",
     "coveralls": "gulp test && cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",

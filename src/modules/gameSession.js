@@ -1,15 +1,14 @@
-/*jslint node: true */
+"use strict";
 
-var _ = require('lodash');
-var log = require('winston');
-var Q = require('q');
-var gameLoopObject = require('./gameLoop');
+var _ = require("lodash");
+var log = require("winston");
+var Q = require("q");
+var gameLoopObject = require("./gameLoop");
 
 var gameArray = [];
 
 var createGameModel,
   gameModel,
-  addPlayerToGameModel,
   addPlayerToGame,
   addScoreToGame,
   gameByGameID,
@@ -26,7 +25,7 @@ var createGameModel,
 
 /**
  * Creating game and adding it's creator to it
- * 
+ *
  * @param {string} player - player which create game.
  */
 createGameModel = function (player) {
@@ -36,7 +35,7 @@ createGameModel = function (player) {
 ///TODO Clojure IT
 /**
  * Game model object creator function
- * 
+ *
  * @param {string} player - player which create game.
  */
 gameModel = function (player) {
@@ -49,7 +48,7 @@ gameModel = function (player) {
 
 /**
  * Query Game by Game ID
- * 
+ *
  * @param {string} gameID - ID of game we want to select.
  */
 gameByGameID = function (gameID) {
@@ -58,7 +57,7 @@ gameByGameID = function (gameID) {
 
 /**
  * Query Game by Player ID. Player can be only in one game at time.
- * 
+ *
  * @param {string} playerID - ID of game we want to select.
  */
 gameByPlayerID = function (playerID) {
@@ -69,7 +68,7 @@ gameByPlayerID = function (playerID) {
 
 /**
  * Query Index of Game by Game ID.
- * 
+ *
  * @param {string} gameID - ID of game we want to select index for.
  */
 indexOfGameByGameID = function (gameID) {
@@ -78,7 +77,7 @@ indexOfGameByGameID = function (gameID) {
 
 /**
  * Query Index of Game by Player ID. Player can be only in one game at time.
- * 
+ *
  * @param {string} playerID - ID of player we want to select game index for.
  */
 indexOfGameByPlayerID = function (playerID) {
@@ -87,23 +86,23 @@ indexOfGameByPlayerID = function (playerID) {
 
 /**
  * DEPRECATED
- * Query player by it's ID and by Game ID. To Rewrite due to fact that player 
+ * Query player by it's ID and by Game ID. To Rewrite due to fact that player
  * can be only in one game at time so Game ID is obsolete
  *
  * @param {string} playerID - ID of player we want to select.
  * @param {string} gameID - ID of game we want to select player for.
  */
-playerByIDByGameID = function (id, game_id) {
-  return _.findWhere(gameByGameID(game_id).players, function (item) {
+playerByIDByGameID = function (id, gameID) {
+  return _.findWhere(gameByGameID(gameID).players, function (item) {
     return item === id;
   });
 };
 
 /**
- * Action executed after shooting target. Retrieve information about current 
- * target and pass it to the final score. Score has information about which 
+ * Action executed after shooting target. Retrieve information about current
+ * target and pass it to the final score. Score has information about which
  * player got it.
- * 
+ *
  * @param {string} playerID - ID of player who shoot.
  */
 targetShot = function (playerID) {
@@ -118,7 +117,7 @@ targetShot = function (playerID) {
 
 /**
  * Adding score to the score model in game session.
- * 
+ *
  * @param {object} score - Score object passed to be preserved.
  */
 addScoreToGame = function (playerID, score) {
@@ -127,8 +126,8 @@ addScoreToGame = function (playerID, score) {
 
 /**
  * Function evealuating final result of game.
- * 
- * @param {string} playerID - ID Identyfing the specific game (should be 
+ *
+ * @param {string} playerID - ID Identyfing the specific game (should be
  * rewritten, game should be resolverd different way)
  */
 resultOfGame = function (playerID) {
@@ -139,12 +138,12 @@ resultOfGame = function (playerID) {
 };
 
 /**
- * Main Game loop. Has method start which start a entertainment. Game 
+ * Main Game loop. Has method start which start a entertainment. Game
  * is started a Interval which will be rerun given amount of time. New
  * Targets are genereated by Target Generator from Game Loop Module.
  * After all rerun, information about game are send through the promise.
- * 
- * @param {string} playerID - ID Identyfing the specific game (should be 
+ *
+ * @param {string} playerID - ID Identyfing the specific game (should be
  * rewritten, game should be resolverd different way)
  */
 ///TODO How to propagate teaser to client ?
@@ -167,24 +166,24 @@ gameLoop = function (playerID) {
  * Function generating game loop rounds with given interval. Each
  * round gets it's own target which is passed to the clients.
  * Targets are genereated by Target Generator from Game Loop Module.
- * After all rerun, information about game are send through resolving the 
+ * After all rerun, information about game are send through resolving the
  * passed promise and interval is cleaned.
- * 
- * @param {object} gameSessionLoop - Game Session module initialized by 
+ *
+ * @param {object} gameSessionLoop - Game Session module initialized by
  * Game Session.
  * @param {int} delay - Delay between sessions
  * @param {int} repetitions - Amount of repetitions
- * @param {promies} Q - promised object to be resolved
- * @param {object} gameSessionObject - session object where new target is 
+ * @param {promies} promise - promised object to be resolved
+ * @param {object} gameSessionObject - session object where new target is
  * passed
  */
-gameLoopRounds = function (gameSessionLoop, delay, repetitions, Q, gameSessionObject) {
+gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSessionObject) {
   var x = 0;
   var intervalID = setInterval(function () {
     gameSessionObject.target = gameSessionLoop.next();
     if (++x === repetitions) {
       gameSessionObject.target = undefined;
-      Q.resolve(gameSessionLoop.stop());
+      promise.resolve(gameSessionLoop.stop());
       clearInterval(intervalID);
     }
   }, delay);
@@ -192,7 +191,7 @@ gameLoopRounds = function (gameSessionLoop, delay, repetitions, Q, gameSessionOb
 
 /**
  * Adding player to game
- * 
+ *
  * @param {string} playerID - Player which is added to game.
  * @param {string} gameID - Game to which we want to add player.
  */
@@ -202,7 +201,7 @@ addPlayerToGame = function (playerID, gameID) {
 
 /**
  * Remove player from games. Player can be only in one game at time.
- * 
+ *
  * @param {string} playerID - Player which is removed from game.
  */
 removePlayerById = function (playerID) {
@@ -227,7 +226,7 @@ debugGameSession = function () {
 exports.createGameModel = createGameModel;
 exports.gameByGameID = gameByGameID;
 exports.playerByIDByGameID = playerByIDByGameID;
-exports.addPlayerToGameModel = addPlayerToGameModel;
+exports.addPlayerToGame = addPlayerToGame;
 exports.removePlayerById = removePlayerById;
 exports.debugGameSession = debugGameSession;
 exports.gameLoop = gameLoop;

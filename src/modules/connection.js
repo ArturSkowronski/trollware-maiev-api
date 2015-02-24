@@ -1,9 +1,11 @@
-var socketio = require('socket.io');
-var events = require('./events');
-var winston = require('winston');
+"use strict";
+
+var socketio = require("socket.io");
+var events = require("./events");
+var winston = require("winston");
 var log = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({ level: 'debug' }),
+    new (winston.transports.Console)({ level: "debug" })
   ]
 });
 
@@ -24,7 +26,7 @@ defineEvent = function (eventName) {
 };
 
 connection = function (connected, disconnected) {
-  io.on('connection', function (socket) {
+  io.on("connection", function (socket) {
     log.debug("Client connected with socket id: %s", socket.id);
     var socketWrapper = {id: socket.id, _socket: socket};
 
@@ -47,7 +49,7 @@ connection = function (connected, disconnected) {
 
     connected(socketWrapper);
 
-    socket.on('disconnect', function () {
+    socket.on("disconnect", function () {
       disconnected(socket);
       log.debug("Client left with socket id: %s", socket.id);
     });

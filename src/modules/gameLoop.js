@@ -1,9 +1,11 @@
-/*eslint-env node, generators */
+/*eslint-disable no-constant-condition*/
 
-var winston = require('winston');
+"use strict";
+
+var winston = require("winston");
 var log = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({ level: 'debug' }),
+    new (winston.transports.Console)({ level: "debug" })
   ]
 });
 
@@ -33,7 +35,7 @@ gameLoop = function (gameSession) {
 };
 
 targetGenerator = function *() {
-  while(true){
+  while (true) {
     log.debug("GameLoop Event yielded");
     yield createTarget();
   }
