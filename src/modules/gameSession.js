@@ -224,7 +224,6 @@ debugGameSession = function () {
   return gameArray;
 };
 
-
 exports.createGameModel = createGameModel;
 exports.gameByGameID = gameByGameID;
 exports.playerByIDByGameID = playerByIDByGameID;
