@@ -21,9 +21,9 @@ game.init(io.initialize(server));
 app.set("port", (process.env.PORT || 5000));
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
-app.get("/", function (req, res) {res.sendFile(path.join(__dirname, "/index.html"));});
-app.get("/socket-local", function (req, res) {res.sendFile(path.join(__dirname, "/socket-local.html"));});
-app.get("/socket-server", function (req, res) {res.sendFile(path.join(__dirname, "/socket-server.html"));});
+app.get("/", function (req, res) {res.sendFile(path.join(__dirname, "/views/index.html"));});
+app.get("/socket-local", function (req, res) {res.sendFile(path.join(__dirname, "/views/socket-local.html"));});
+app.get("/socket-server", function (req, res) {res.sendFile(path.join(__dirname, "/views/socket-server.html"));});
 app.get("/debug", function (req, res) {res.send(JSON.stringify(game.debug()));});
 
 server.listen(app.get("port"), function() {log.debug("Node app is running at localhost: %s", app.get("port"));});

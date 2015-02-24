@@ -1,13 +1,17 @@
-module.exports = exports = Events;
+"use strict";
 
-exports.defineEvent = function (eventName) {
-	return Symbol.for(eventName);
-}
+var defineEvent,
+  validateSymbol;
 
-exports.validateSymbol = function (symbol) {
-	if(typeof symbol != "symbol") {
-		throw new Error('Not a symbol passed to emit function, cannot send');
-	}
-}
+defineEvent = function (eventName) {
+  return Symbol.for(eventName);
+};
 
-function Events(){}
+validateSymbol = function (symbol) {
+  if(typeof symbol !== "symbol") {
+    throw new Error('Not a symbol passed to emit function, cannot send');
+  }
+};
+
+exports.defineEvent = defineEvent;
+exports.validateSymbol = validateSymbol;
