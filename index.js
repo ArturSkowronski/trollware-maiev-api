@@ -27,3 +27,5 @@ app.get("/socket-server", function (req, res) {res.sendFile(path.join(__dirname,
 app.get("/debug", function (req, res) {res.send(JSON.stringify(game.debug()));});
 
 server.listen(app.get("port"), function() {log.debug("Node app is running at localhost: %s", app.get("port"));});
+
+

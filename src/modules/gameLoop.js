@@ -1,6 +1,7 @@
-/*eslint-disable no-constant-condition*/
 
 "use strict";
+
+var targetGenerator = require("./targetGenerator");
 
 var winston = require("winston");
 var log = new (winston.Logger)({
@@ -9,14 +10,11 @@ var log = new (winston.Logger)({
   ]
 });
 
-var targetGenerator,
-  gameLoop,
-  createTarget,
-  randomizeTarget;
+var gameLoop;
 
 gameLoop = function (gameSession) {
   var gameSessionID = gameSession.id;
-  var generateTarget = targetGenerator();
+  var generateTarget = targetGenerator.generate();
 
   return {
     start: function () {
@@ -34,28 +32,5 @@ gameLoop = function (gameSession) {
   };
 };
 
-targetGenerator = function *() {
-  while (true) {
-    log.debug("GameLoop Event yielded");
-    yield createTarget();
-  }
-};
-
-createTarget = function () {
-  log.debug("Target Created");
-  return randomizeTarget();
-};
-
-randomizeTarget = function () {
-  //TODO Symbolize IT
-  var typeOfItems = {};
-  typeOfItems.good = "good";
-  typeOfItems.bad = "bad";
-
-  return {
-    type: typeOfItems.good,
-    score: 1
-  };
-};
 
 exports.gameLoop = gameLoop;
