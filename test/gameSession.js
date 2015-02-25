@@ -63,8 +63,7 @@ describe('Game Session', function () {
       expect(gameIndex).to.equals(0);
     });
 
-
-    it('should be able to receive new score', function () {
+    it('should be able to receive new score (3 points)', function () {
       var score = {
         score: 1,
         type: "good",
@@ -75,7 +74,12 @@ describe('Game Session', function () {
       expect(gameObject).to.have.property('scores').with.length(1);
     });
 
-    it('should have two scores after adding second one', function () {
+    it('should have result 1 with first score', function () {
+      var gameResult = $.resultOfGame("11111");
+      expect(gameResult).to.equals(1);
+    });
+
+    it('should have two scores after adding second one (2 points)', function () {
       var score = {
         score: 2,
         type: "bad",
@@ -84,6 +88,11 @@ describe('Game Session', function () {
       var gameIndex = $.addScoreToGame("11111", score);
       var gameObject = $.gameByPlayerID("11111");
       expect(gameObject).to.have.property('scores').with.length(2);
+    });
+
+    it('should have result 3 with both scores', function () {
+      var gameResult = $.resultOfGame("11111");
+      expect(gameResult).to.equals(3);
     });
 
     describe('and with added player 22222', function () {

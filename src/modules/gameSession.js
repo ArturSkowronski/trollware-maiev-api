@@ -246,5 +246,5 @@ exports.indexOfGameByGameID = indexOfGameByGameID;
 exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
 exports.addScoreToGame = addScoreToGame;
-
+exports.resultOfGame = resultOfGame;
 exports.targetShot = targetShot;
