@@ -63,7 +63,7 @@ describe('Game Session', function () {
       expect(gameIndex).to.equals(0);
     });
 
-    it('should be able to receive new score (3 points)', function () {
+    it('should be able to receive new score (1 point)', function () {
       var score = {
         score: 1,
         type: "good",
