@@ -127,7 +127,7 @@ targetShot = function (playerID) {
  * @param {object} score - Score object passed to be preserved.
  */
 addScoreToGame = function (playerID, score) {
-  gameByPlayerID(playerID).score.push(score);
+  gameArray[indexOfGameByPlayerID(playerID)].scores.push(score);
 };
 
 /**
@@ -137,7 +137,7 @@ addScoreToGame = function (playerID, score) {
  * rewritten, game should be resolverd different way)
  */
 resultOfGame = function (playerID) {
-  return _.chain(gameByPlayerID(playerID).score)
+  return _.chain(gameByPlayerID(playerID).scores)
     .map(function (item) { return item.score; })
     .reduce(function (sum, item) { return sum + item; })
     .value();
@@ -245,5 +245,6 @@ exports.debugGameSession = debugGameSession;
 exports.indexOfGameByGameID = indexOfGameByGameID;
 exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
+exports.addScoreToGame = addScoreToGame;
 
 exports.targetShot = targetShot;
