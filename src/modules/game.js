@@ -101,7 +101,7 @@ eventPusher = function (socket) {
     passTargetToClients: function (target) {
       socket.emit(events.TARGET_CREATED, target);
     }
-  }
+  };
 };
 
 startGame = function (data, socket) {
