@@ -28,8 +28,7 @@ createTarget = function () {
 
 randomizeTarget = function () {
   var typeOfItems = {}, model, math = random(0, 2);
-  typeOfItems.good = "good";
-  typeOfItems.bad = "bad";
+  typeOfItems.good = "good";  typeOfItems.bad = "bad";
 
   switch(math) {
     case 0:

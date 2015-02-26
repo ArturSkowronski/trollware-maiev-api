@@ -92,8 +92,8 @@ joinGame = function (data, socket) {
  *
  * @param {string} data - null.
  */
-targetShot = function () {
-  gameSession.targetShot();
+targetShot = function (data, socket) {
+  gameSession.targetShot(socket);
 };
 
 eventPusher = function (socket) {
