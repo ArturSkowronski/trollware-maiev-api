@@ -16,13 +16,15 @@ var events = {},
   defineEvents,
   defineEventHandlers,
   init,
+  targetCreated,
+  gameEnded,
   startGame,
   eventPusher,
   targetShot;
 
 var createGame, joinGame;
 
-init = (io)  => {
+init = (io) => {
   if (!io) {
     log.error("Game need to be initialized with Socket Session");
   }
@@ -32,16 +34,23 @@ init = (io)  => {
 };
 
 defineEvents = (io) => {
+  
+  //Event Listeners
   events.CREATE_GAME = io.defineEvent("createGame");
-  events.GAME_CREATED = io.defineEvent("gameCreated");
-  events.GAME_NOT_CREATED = io.defineEvent("gameNotCreated");
   events.JOIN_GAME = io.defineEvent("joinGame");
-  events.GAME_NOT_JOINED = io.defineEvent("gameNotJoined");
-  events.GAME_JOINED = io.defineEvent("gameJoined");
-  events.GAME_ENDED = io.defineEvent("gameEnded");
   events.START_GAME = io.defineEvent("startGame");
   events.TARGET_SHOT = io.defineEvent("targetShot");
+
+  //Event Emitters
+  events.GAME_CREATED = io.defineEvent("gameCreated");
+  events.GAME_JOINED = io.defineEvent("gameJoined");
+  events.GAME_ENDED = io.defineEvent("gameEnded");
   events.TARGET_CREATED = io.defineEvent("targetCreated");
+  
+  //Error Handling Event Emitters
+  events.GAME_NOT_JOINED = io.defineEvent("gameNotJoined");
+  events.GAME_NOT_CREATED = io.defineEvent("gameNotCreated");
+
 };
 
 defineEventHandlers = (socket) => {
