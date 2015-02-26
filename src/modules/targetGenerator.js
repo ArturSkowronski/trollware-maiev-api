@@ -11,9 +11,10 @@ var log = new (winston.Logger)({
 
 var createTarget,
   randomizeTarget,
-  random;
+  random,
+  generate;
 
-var generate = function* () {
+generate = function* () {
   while (true) {
     log.debug("TargetGenerator Event yielded");
     yield createTarget();

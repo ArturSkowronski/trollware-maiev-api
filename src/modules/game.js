@@ -38,6 +38,7 @@ defineEvents = function (io) {
   events.JOIN_GAME = io.defineEvent("joinGame");
   events.GAME_NOT_JOINED = io.defineEvent("gameNotJoined");
   events.GAME_JOINED = io.defineEvent("gameJoined");
+  events.GAME_ENDED = io.defineEvent("gameEnded");
   events.START_GAME = io.defineEvent("startGame");
   events.TARGET_SHOT = io.defineEvent("targetShot");
   events.TARGET_CREATED = io.defineEvent("targetCreated");
@@ -87,25 +88,28 @@ joinGame = function (data, socket) {
   log.info("Player %s joined game %s", socket.id, data.gameID);
 };
 
-/**
- * Event: Target shot by client.
- *
- * @param {string} data - null.
- */
 targetShot = function (data, socket) {
   gameSession.targetShot(socket);
 };
 
-eventPusher = function (socket) {
-  return {
-    passTargetToClients: function (target) {
-      socket.emit(events.TARGET_CREATED, target);
+gameEnded = function (socket, data) {
+  socket.emit(events.GAME_ENDED, data);
+}
+
+targetCreated = function (socket, data) {
+  socket.emit(events.TARGET_CREATED, data);
+}
+
+eventPusher = function (socket, funct) {
+  return function (data) {
+      funct(socket, data);
     }
-  };
 };
 
 startGame = function (data, socket) {
-  gameSession.gameLoop(socket.id, eventPusher(socket)).start();
+  gameSession.gameLoop(socket.id, 
+    eventPusher(socket, gameEnded), 
+    eventPusher(socket, targetCreated)).start();
 };
 
 connected = function (socket) {

@@ -26,7 +26,6 @@ describe('Game Session', function () {
 
     it('should be selectable by Player ID "11111"', function () {
       var gameObject = $.gameByPlayerID("11111");
-
       expect(gameObject).to.have.property('id', "11111");
       expect(gameObject).to.have.property('players').with.length(1);
       expect(gameObject).to.have.property('players').to.include("11111");

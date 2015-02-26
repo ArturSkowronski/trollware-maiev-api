@@ -154,18 +154,19 @@ resultOfGame = function (playerID) {
  */
 ///TODO How to propagate teaser to client ?
 ///Generator? Promise? Listener/Subscriber?
-gameLoop = function (playerID, eventPusher) {
+gameLoop = function (playerID, targetEvent, endEvent) {
   return {
     start: function () {
       var gamePromise = Q.defer();
 
       var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
       gameByPlayerID(playerID).target = gameSessionLoop.start();
-      eventPusher.passTargetToClients(gameByPlayerID(playerID).target);
+      targetEvent(gameByPlayerID(playerID).target);
       log.debug("Received Target of Type: " + gameByPlayerID(playerID).target.type);
-      gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID), eventPusher);
+      gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID), targetEvent);
       gamePromise.promise.then(function () {
         log.info("We ended");
+        endEvent(resultOfGame(playerID));
       });
     }
   };
@@ -185,13 +186,15 @@ gameLoop = function (playerID, eventPusher) {
  * @param {promies} promise - promised object to be resolved
  * @param {object} gameSessionObject - session object where new target is
  * passed
+ * @param {funct} targetEvent - function emitin new target to clients
  */
-gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSessionObject, eventPusher) {
+gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) {
   var x = 0;
   var intervalID = setInterval(function () {
     gameSessionObject.target = gameSessionLoop.next();
     log.debug("Received Target of Type: " + gameSessionObject.target.type);
-    eventPusher.passTargetToClients(gameSessionObject.target);
+    
+    targetEvent(gameSessionObject.target);
 
     if (++x === repetitions) {
       gameSessionObject.target = undefined;
