@@ -34,7 +34,7 @@ var createGameModel,
  *
  * @param {string} player - player which create game.
  */
-createGameModel = function (player) {
+createGameModel = (player) => {
   gameArray.push(gameModel(player));
 };
 
@@ -44,7 +44,7 @@ createGameModel = function (player) {
  *
  * @param {string} player - player which create game.
  */
-gameModel = function (player) {
+gameModel = (player) => {
   return {
     id: player.id,
     players: [player.id],
@@ -57,7 +57,7 @@ gameModel = function (player) {
  *
  * @param {string} gameID - ID of game we want to select.
  */
-gameByGameID = function (gameID) {
+gameByGameID = (gameID) => {
   return _.findWhere(gameArray, {id: gameID});
 };
 
@@ -66,8 +66,8 @@ gameByGameID = function (gameID) {
  *
  * @param {string} playerID - ID of game we want to select.
  */
-gameByPlayerID = function (playerID) {
-  return _.find(gameArray, function (item) {
+gameByPlayerID = (playerID) => {
+  return _.find(gameArray, (item) => {
     return _.includes(item.players, playerID);
   });
 };
@@ -77,7 +77,7 @@ gameByPlayerID = function (playerID) {
  *
  * @param {string} gameID - ID of game we want to select index for.
  */
-indexOfGameByGameID = function (gameID) {
+indexOfGameByGameID = (gameID) => {
   return _.indexOf(gameArray, gameByGameID(gameID));
 };
 
@@ -86,7 +86,7 @@ indexOfGameByGameID = function (gameID) {
  *
  * @param {string} playerID - ID of player we want to select game index for.
  */
-indexOfGameByPlayerID = function (playerID) {
+indexOfGameByPlayerID = (playerID) => {
   return _.indexOf(gameArray, gameByPlayerID(playerID));
 };
 
@@ -98,7 +98,7 @@ indexOfGameByPlayerID = function (playerID) {
  * @param {string} playerID - ID of player we want to select.
  * @param {string} gameID - ID of game we want to select player for.
  */
-playerByIDByGameID = function (id, gameID) {
+playerByIDByGameID = (id, gameID) => {
   return _.find(gameByGameID(gameID).players, function (item) {
     return item === id;
   });
@@ -111,7 +111,7 @@ playerByIDByGameID = function (id, gameID) {
  *
  * @param {string} playerID - ID of player who shoot.
  */
-targetShot = function (playerID) {
+targetShot = (playerID) => {
   var shotTarget = gameByPlayerID(playerID).target;
   var score = {
     score: shotTarget.score,
@@ -126,7 +126,7 @@ targetShot = function (playerID) {
  *
  * @param {object} score - Score object passed to be preserved.
  */
-addScoreToGame = function (playerID, score) {
+addScoreToGame = (playerID, score) => {
   gameArray[indexOfGameByPlayerID(playerID)].scores.push(score);
 };
 
@@ -136,10 +136,10 @@ addScoreToGame = function (playerID, score) {
  * @param {string} playerID - ID Identyfing the specific game (should be
  * rewritten, game should be resolverd different way)
  */
-resultOfGame = function (playerID) {
+resultOfGame = (playerID) => {
   return _.chain(gameByPlayerID(playerID).scores)
-    .map(function (item) { return item.score; })
-    .reduce(function (sum, item) { return sum + item; })
+    .map((item) => { return item.score; })
+    .reduce((sum, item) => { return sum + item; })
     .value();
 };
 
@@ -154,21 +154,23 @@ resultOfGame = function (playerID) {
  */
 ///TODO How to propagate teaser to client ?
 ///Generator? Promise? Listener/Subscriber?
-gameLoop = function (playerID, targetEvent, endEvent) {
+gameLoop = (playerID, targetEvent, endEvent) => {
   return {
-    start: function () {
+    start: () => {
       var gamePromise = Q.defer();
-
-      var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
-      gameByPlayerID(playerID).target = gameSessionLoop.start();
-      targetEvent(gameByPlayerID(playerID).target);
+      var selectedGame = gameByPlayerID(playerID);
+      var gameSessionLoop = gameLoopObject.gameLoop(selectedGame);
+      selectedGame.target = gameSessionLoop.start();
+      targetEvent(selectedGame.target);
       
-      log.debug("Received Target of Type: " + gameByPlayerID(playerID).target.type);
+      log.debug("Received Target of Type: " + selectedGame.target.type);
       
-      gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID), targetEvent);
-      gamePromise.promise.then(function () {
+      gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, selectedGame, targetEvent);
+      
+      gamePromise.promise.then(() => {
         endEvent(resultOfGame(playerID));
       });
+
     }
   };
 };
@@ -189,9 +191,9 @@ gameLoop = function (playerID, targetEvent, endEvent) {
  * passed
  * @param {funct} targetEvent - function emitin new target to clients
  */
-gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) {
+gameLoopRounds = (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) => {
   var x = 0;
-  var intervalID = setInterval(function () {
+  var intervalID = setInterval(() => {
     gameSessionObject.target = gameSessionLoop.next();
     log.debug("Received Target of Type: " + gameSessionObject.target.type);
     
@@ -211,7 +213,7 @@ gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSes
  * @param {string} playerID - Player which is added to game.
  * @param {string} gameID - Game to which we want to add player.
  */
-addPlayerToGame = function (playerID, gameID) {
+addPlayerToGame = (playerID, gameID) => {
   gameArray[indexOfGameByGameID(gameID)].players.push(playerID);
 };
 
@@ -220,9 +222,9 @@ addPlayerToGame = function (playerID, gameID) {
  *
  * @param {string} playerID - Player which is removed from game.
  */
-removePlayerById = function (playerID) {
-  _.forEach(gameArray, function (game) {
-    _.remove(game.players, function (player) {
+removePlayerById = (playerID) => {
+  _.forEach(gameArray, (game) => {
+    _.remove(game.players, (player) => {
       if (player === playerID) {
         log.info("Player " + playerID + " removed from game " + game.id);
         return true;
@@ -235,7 +237,7 @@ removePlayerById = function (playerID) {
 /**
  * Debut method informing about current state of game
  */
-debugGameSession = function () {
+debugGameSession = () => {
   return gameArray;
 };
 
