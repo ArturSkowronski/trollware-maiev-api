@@ -97,7 +97,7 @@ gameEnded = function (socket, data) {
 }
 
 targetCreated = function (socket, data) {
-  socket.emit(events.TARGET_CREATED, data);
+  socket.emit(events.TARGET_CREATED);
 }
 
 eventPusher = function (socket, funct) {

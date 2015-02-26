@@ -162,10 +162,11 @@ gameLoop = function (playerID, targetEvent, endEvent) {
       var gameSessionLoop = gameLoopObject.gameLoop(gameByPlayerID(playerID));
       gameByPlayerID(playerID).target = gameSessionLoop.start();
       targetEvent(gameByPlayerID(playerID).target);
+      
       log.debug("Received Target of Type: " + gameByPlayerID(playerID).target.type);
+      
       gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, gameByPlayerID(playerID), targetEvent);
       gamePromise.promise.then(function () {
-        log.info("We ended");
         endEvent(resultOfGame(playerID));
       });
     }
