@@ -29,9 +29,10 @@ connection = function (connected, disconnected) {
   io.on("connection", function (socket) {
     log.debug("Client connected with socket id: %s", socket.id);
     var socketWrapper = {id: socket.id, _socket: socket};
-
+    
     socketWrapper.join = function (room) {
       log.debug("Client %s joined to room %s", socket.id, room);
+      socketWrapper.room = room;
       socket.join(room);
     };
 
@@ -39,6 +40,15 @@ connection = function (connected, disconnected) {
       events.validateSymbol(symbol);
       log.debug("Emmiting event " + Symbol.keyFor(symbol) + " to " + socket.id);
       socket.emit(Symbol.keyFor(symbol), data);
+    };
+
+    socketWrapper.emitAll = function (symbol, data) {
+      events.validateSymbol(symbol);
+      if (!socketWrapper.room) {
+        log.debug("Socket has no room so can't emit to one");
+      }
+      log.debug("Emmiting event " + Symbol.keyFor(symbol) + " to whole room " + socketWrapper.room);
+      io.to(socketWrapper.room).emit(Symbol.keyFor(symbol), data);
     };
 
     socketWrapper.on = function (symbol, callback) {

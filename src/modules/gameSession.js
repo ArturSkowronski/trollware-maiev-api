@@ -15,8 +15,6 @@ var gameArray = [];
 
 var createGameModel,
   gameModel,
-  addPlayerToGame,
-  addScoreToGame,
   gameByGameID,
   gameByPlayerID,
   removePlayerById,
@@ -24,9 +22,7 @@ var createGameModel,
   indexOfGameByPlayerID,
   playerByIDByGameID,
   debugGameSession,
-  targetShot,
   gameLoop,
-  resultOfGame,
   gameLoopRounds;
 
 /**
@@ -60,8 +56,14 @@ gameModel = function (player) {
     targetShot: function () {
       addScoreToGame(this.target);
     },
+    addPlayerToGame: function (playerID) {
+      this.players.push(playerID);
+    },
     addTarget: function (target) {
       this.target = target;
+    },
+    clearTarget: function () {
+      this.target = undefined;
     },
     resultOfGame: function () {
       return _.chain(this.scores)
@@ -78,9 +80,7 @@ gameModel = function (player) {
  * @param {string} gameID - ID of game we want to select.
  */
 gameByGameID = (gameID) => {
-  return _.find(gameArray, (item) => {
-    return item.id === gameID;
-  });
+  return gameArray[indexOfGameByGameID(gameID)];
 };
 
 /**
@@ -89,9 +89,7 @@ gameByGameID = (gameID) => {
  * @param {string} playerID - ID of game we want to select.
  */
 gameByPlayerID = (playerID) => {
-  return _.find(gameArray, (item) => {
-    return _.includes(item.players, playerID);
-  });
+    return gameArray[indexOfGameByPlayerID(playerID)]; 
 };
 
 /**
@@ -100,7 +98,9 @@ gameByPlayerID = (playerID) => {
  * @param {string} gameID - ID of game we want to select index for.
  */
 indexOfGameByGameID = (gameID) => {
-  return _.indexOf(gameArray, gameByGameID(gameID));
+  return _.indexOf(gameArray, _.find(gameArray, (item) => {
+    return item.id === gameID;
+  }));
 };
 
 /**
@@ -109,7 +109,9 @@ indexOfGameByGameID = (gameID) => {
  * @param {string} playerID - ID of player we want to select game index for.
  */
 indexOfGameByPlayerID = (playerID) => {
-  return _.indexOf(gameArray, gameByPlayerID(playerID));
+  return _.indexOf(gameArray, _.find(gameArray, (item) => {
+    return _.includes(item.players, playerID);
+  }));
 };
 
 /**
@@ -153,9 +155,8 @@ gameLoop = (playerID, targetEvent, endEvent) => {
       gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, selectedGame, targetEvent);
       
       gamePromise.promise.then(() => {
-        endEvent(resultOfGame(playerID));
+        endEvent(selectedGame.resultOfGame());
       });
-
     }
   };
 };
@@ -186,21 +187,11 @@ gameLoopRounds = (gameSessionLoop, delay, repetitions, promise, gameSessionObjec
     targetEvent(target);
 
     if (++x === repetitions) {
-      gameSessionObject.target = undefined;
+      gameSessionObject.clearTarget();
       promise.resolve(gameSessionLoop.stop());
       clearInterval(intervalID);
     }
   }, delay);
-};
-
-/**
- * Adding player to game
- *
- * @param {string} playerID - Player which is added to game.
- * @param {string} gameID - Game to which we want to add player.
- */
-addPlayerToGame = (playerID, gameID) => {
-  gameArray[indexOfGameByGameID(gameID)].players.push(playerID);
 };
 
 /**
@@ -231,12 +222,9 @@ exports.createGameModel = createGameModel;
 exports.gameByGameID = gameByGameID;
 exports.gameByPlayerID = gameByPlayerID;
 exports.playerByIDByGameID = playerByIDByGameID;
-exports.addPlayerToGame = addPlayerToGame;
 exports.removePlayerById = removePlayerById;
 exports.debugGameSession = debugGameSession;
 exports.indexOfGameByGameID = indexOfGameByGameID;
 exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
-exports.resultOfGame = resultOfGame;
-exports.targetShot = targetShot;
 exports.gameArray = gameArray;

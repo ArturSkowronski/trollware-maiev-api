@@ -2,8 +2,7 @@
 
 var expect = require("chai").expect;
 
-var $ = require('../src/modules/gameSession.js');
-
+var $ = require('../src/modules/gameSession');
 
 describe('Game Session', function () {
 
@@ -68,29 +67,38 @@ describe('Game Session', function () {
         type: "good",
         playerID: "11111"
       };
-      var gameIndex = $.addScoreToGame("11111", score);
+
+      var gameIndex = $.indexOfGameByPlayerID("11111");
+      $.gameArray[gameIndex].addTarget(score);
+      $.gameArray[gameIndex].targetShot();
       var gameObject = $.gameByPlayerID("11111");
       expect(gameObject).to.have.property('scores').with.length(1);
     });
 
     it('should have result 1 with first score', function () {
-      var gameResult = $.resultOfGame("11111");
+      var gameResult = $.gameByPlayerID("11111").resultOfGame();
       expect(gameResult).to.equals(1);
     });
 
     it('should have two scores after adding second one (2 points)', function () {
+      
       var score = {
         score: 2,
         type: "bad",
         playerID: "11111"
       };
-      var gameIndex = $.addScoreToGame("11111", score);
+      
+      var gameIndex = $.indexOfGameByPlayerID("11111");
+      
+      $.gameArray[gameIndex].addTarget(score);
+      $.gameArray[gameIndex].targetShot();
+
       var gameObject = $.gameByPlayerID("11111");
       expect(gameObject).to.have.property('scores').with.length(2);
     });
 
     it('should have result 3 with both scores', function () {
-      var gameResult = $.resultOfGame("11111");
+      var gameResult = $.gameByPlayerID("11111").resultOfGame();
       expect(gameResult).to.equals(3);
     });
 
@@ -99,7 +107,7 @@ describe('Game Session', function () {
       var playerName = "22222";
 
       before(function() {
-        $.addPlayerToGame(playerName, "11111");
+        $.gameByGameID("11111").addPlayerToGame(playerName);
       });
 	
   	  it('should not be selectable by Game ID "22222"', function () {

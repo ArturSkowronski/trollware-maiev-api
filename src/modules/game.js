@@ -37,15 +37,15 @@ defineEvents = (io) => {
   
   //Event Listeners
   events.CREATE_GAME = io.defineEvent("createGame");
-  events.JOIN_GAME = io.defineEvent("joinGame");
   events.START_GAME = io.defineEvent("startGame");
+  events.JOIN_GAME = io.defineEvent("joinGame");
   events.TARGET_SHOT = io.defineEvent("targetShot");
 
   //Event Emitters
   events.GAME_CREATED = io.defineEvent("gameCreated");
   events.GAME_JOINED = io.defineEvent("gameJoined");
-  events.GAME_ENDED = io.defineEvent("gameEnded");
   events.TARGET_CREATED = io.defineEvent("targetCreated");
+  events.GAME_ENDED = io.defineEvent("gameEnded");
   
   //Error Handling Event Emitters
   events.GAME_NOT_JOINED = io.defineEvent("gameNotJoined");
@@ -55,8 +55,8 @@ defineEvents = (io) => {
 
 defineEventHandlers = (socket) => {
   socket.on(events.CREATE_GAME, createGame);
-  socket.on(events.JOIN_GAME, joinGame);
   socket.on(events.START_GAME, startGame);
+  socket.on(events.JOIN_GAME, joinGame);
   socket.on(events.TARGET_SHOT, targetShot);
 };
 
@@ -85,7 +85,7 @@ joinGame = (data, socket) => {
     return;
   }
 
-  if (gameSession.playerByIDByGameID(socket.id, data.gameID).length) {
+  if (gameSession.playerByIDByGameID(socket.id, data.gameID)) {
     log.error("Already joined");
     socket.emit(events.GAME_NOT_JOINED, {error: "Already joined"});
     return;
@@ -93,12 +93,12 @@ joinGame = (data, socket) => {
 
   socket.join(data.gameID);
   socket.emit(events.GAME_JOINED, {});
-  gameSession.addPlayerToGame(socket.id, data.gameID);
+  gameSession.gameByPlayerID(data.gameID).addPlayerToGame(socket.id);
   log.info("Player %s joined game %s", socket.id, data.gameID);
 };
 
 targetShot = (data, socket) => {
-  gameSession.targetShot(socket);
+  gameSession.gameByPlayerID(socket).targetShot();
 };
 
 gameEnded = (socket, data) => {
