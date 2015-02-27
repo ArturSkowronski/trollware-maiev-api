@@ -35,7 +35,7 @@ var createGameModel,
  * @param {string} player - player which create game.
  */
 createGameModel = (player) => {
-  gameArray.push(gameModel(player));
+  gameArray.push(new gameModel(player));
 };
 
 ///TODO Clojure IT
@@ -44,12 +44,32 @@ createGameModel = (player) => {
  *
  * @param {string} player - player which create game.
  */
-gameModel = (player) => {
-  return {
-    id: player.id,
-    players: [player.id],
-    scores: []
+gameModel = function (player) {
+  var id = player.id;
+  var players = [player.id];
+  var scores = [];
+  var target = {};
+  var addScoreToGame = function(score) {
+    scores.push(score);
   };
+  return {
+    id: id,
+    scores: scores,
+    players: players,
+    target: target,
+    targetShot: function () {
+      addScoreToGame(this.target);
+    },
+    addTarget: function (target) {
+      this.target = target;
+    },
+    resultOfGame: function () {
+      return _.chain(this.scores)
+        .map(function (item) { return item.score;})
+        .reduce(function (sum, item) { return sum + item; })
+        .value();
+    }
+  }
 };
 
 /**
@@ -58,7 +78,9 @@ gameModel = (player) => {
  * @param {string} gameID - ID of game we want to select.
  */
 gameByGameID = (gameID) => {
-  return _.findWhere(gameArray, {id: gameID});
+  return _.find(gameArray, (item) => {
+    return item.id === gameID;
+  });
 };
 
 /**
@@ -104,44 +126,6 @@ playerByIDByGameID = (id, gameID) => {
   });
 };
 
-/**
- * Action executed after shooting target. Retrieve information about current
- * target and pass it to the final score. Score has information about which
- * player got it.
- *
- * @param {string} playerID - ID of player who shoot.
- */
-targetShot = (playerID) => {
-  var shotTarget = gameByPlayerID(playerID).target;
-  var score = {
-    score: shotTarget.score,
-    type: shotTarget.type,
-    playerID: playerID
-  };
-  addScoreToGame(playerID, score);
-};
-
-/**
- * Adding score to the score model in game session.
- *
- * @param {object} score - Score object passed to be preserved.
- */
-addScoreToGame = (playerID, score) => {
-  gameArray[indexOfGameByPlayerID(playerID)].scores.push(score);
-};
-
-/**
- * Function evealuating final result of game.
- *
- * @param {string} playerID - ID Identyfing the specific game (should be
- * rewritten, game should be resolverd different way)
- */
-resultOfGame = (playerID) => {
-  return _.chain(gameByPlayerID(playerID).scores)
-    .map((item) => { return item.score; })
-    .reduce((sum, item) => { return sum + item; })
-    .value();
-};
 
 /**
  * Main Game loop. Has method start which start a entertainment. Game
@@ -151,7 +135,7 @@ resultOfGame = (playerID) => {
  *
  * @param {string} playerID - ID Identyfing the specific game (should be
  * rewritten, game should be resolverd different way)
- */
+*/
 ///TODO How to propagate teaser to client ?
 ///Generator? Promise? Listener/Subscriber?
 gameLoop = (playerID, targetEvent, endEvent) => {
@@ -160,7 +144,8 @@ gameLoop = (playerID, targetEvent, endEvent) => {
       var gamePromise = Q.defer();
       var selectedGame = gameByPlayerID(playerID);
       var gameSessionLoop = gameLoopObject.gameLoop(selectedGame);
-      selectedGame.target = gameSessionLoop.start();
+      var target = gameSessionLoop.start();
+      selectedGame.addTarget(target);
       targetEvent(selectedGame.target);
       
       log.debug("Received Target of Type: " + selectedGame.target.type);
@@ -194,10 +179,11 @@ gameLoop = (playerID, targetEvent, endEvent) => {
 gameLoopRounds = (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) => {
   var x = 0;
   var intervalID = setInterval(() => {
-    gameSessionObject.target = gameSessionLoop.next();
-    log.debug("Received Target of Type: " + gameSessionObject.target.type);
+    var target = gameSessionLoop.next();
+    log.debug("Received Target of Type: " + target.type);
+    gameSessionObject.addTarget(target);
     
-    targetEvent(gameSessionObject.target);
+    targetEvent(target);
 
     if (++x === repetitions) {
       gameSessionObject.target = undefined;
@@ -251,6 +237,6 @@ exports.debugGameSession = debugGameSession;
 exports.indexOfGameByGameID = indexOfGameByGameID;
 exports.indexOfGameByPlayerID = indexOfGameByPlayerID;
 exports.gameLoop = gameLoop;
-exports.addScoreToGame = addScoreToGame;
 exports.resultOfGame = resultOfGame;
 exports.targetShot = targetShot;
+exports.gameArray = gameArray;
