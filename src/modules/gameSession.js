@@ -45,7 +45,7 @@ gameModel = function (player) {
   var players = [player.id];
   var scores = [];
   var target = {};
-  var addScoreToGame = function(score) {
+  var addScoreToGame = function (score) {
     scores.push(score);
   };
   return {
