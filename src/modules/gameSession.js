@@ -30,9 +30,7 @@ var createGameModel,
  *
  * @param {string} player - player which create game.
  */
-createGameModel = (player) => {
-  gameArray.push(new gameModel(player));
-};
+createGameModel = (player) => gameArray.push(new gameModel(player));
 
 ///TODO Clojure IT
 /**

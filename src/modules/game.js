@@ -27,6 +27,7 @@ var createGame, joinGame;
 init = (io) => {
   if (!io) {
     log.error("Game need to be initialized with Socket Session");
+    return false;
   }
   defineEvents(io);
   log.info("Game Object Created");
@@ -73,22 +74,22 @@ createGame = (data, socket) => {
 
 joinGame = (data, socket) => {
 
-  if (!data.gameID) {
+  if (!data || !data.gameID) {
     log.error("Didn't sent game ID");
     socket.emit(events.GAME_NOT_JOINED, {error: "Didn't sent game ID"});
-    return;
+    return false;
   }
 
   if (!gameSession.gameByGameID(data.gameID)) {
     log.error("Game " + data.gameID + " not exists");
     socket.emit(events.GAME_NOT_JOINED, {error: "Game not exists"});
-    return;
+    return false;
   }
 
   if (gameSession.playerByIDByGameID(socket.id, data.gameID)) {
     log.error("Already joined");
     socket.emit(events.GAME_NOT_JOINED, {error: "Already joined"});
-    return;
+    return false;
   }
 
   socket.join(data.gameID);
@@ -97,17 +98,9 @@ joinGame = (data, socket) => {
   log.info("Player %s joined game %s", socket.id, data.gameID);
 };
 
-targetShot = (data, socket) => {
-  gameSession.gameByPlayerID(socket).targetShot();
-};
-
-gameEnded = (socket, data) => {
-  socket.emit(events.GAME_ENDED, data);
-}
-
-targetCreated = (socket, data) => {
-  socket.emit(events.TARGET_CREATED);
-}
+targetShot = (data, socket) => gameSession.gameByPlayerID(socket).targetShot();
+gameEnded = (socket, data) => socket.emit(events.GAME_ENDED, data);
+targetCreated = (socket, data) => socket.emit(events.TARGET_CREATED);
 
 eventPusher = (socket, funct) => {
   return (data) => {
@@ -121,13 +114,12 @@ startGame = (data, socket) => {
     eventPusher(socket, targetCreated)).start();
 };
 
-connected = (socket) => {
-  defineEventHandlers(socket);
-};
-
-disconnected = (socket) => {
-  gameSession.removePlayerById(socket.id);
-};
+connected = (socket) => defineEventHandlers(socket);
+disconnected = (socket) => gameSession.removePlayerById(socket.id);
 
 exports.debug = gameSession.debugGameSession;
 exports.init = init;
+
+exports.createGame = createGame;
+exports.joinGame = joinGame;
+
