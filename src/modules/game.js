@@ -24,7 +24,7 @@ var events = {},
 
 var createGame, joinGame;
 
-init = (io) => {
+init = function (io) {
   if (!io) {
     log.error("Game need to be initialized with Socket Session");
     return false;
@@ -34,7 +34,7 @@ init = (io) => {
   io.connection(connected, disconnected);
 };
 
-defineEvents = (io) => {
+defineEvents = function (io) {
   
   //Event Listeners
   events.CREATE_GAME = io.defineEvent("createGame");
@@ -54,14 +54,14 @@ defineEvents = (io) => {
 
 };
 
-defineEventHandlers = (socket) => {
+defineEventHandlers = function (socket) {
   socket.on(events.CREATE_GAME, createGame);
   socket.on(events.START_GAME, startGame);
   socket.on(events.JOIN_GAME, joinGame);
   socket.on(events.TARGET_SHOT, targetShot);
 };
 
-createGame = (data, socket) => {
+createGame = function (data, socket) {
   if (gameSession.gameByGameID(socket.id)) {
     log.error("Game " + socket.id + " already created");
     socket.emit(events.GAME_NOT_CREATED, {error: "Already exists"});
@@ -72,7 +72,7 @@ createGame = (data, socket) => {
   }
 };
 
-joinGame = (data, socket) => {
+joinGame = function (data, socket) {
 
   if (!data || !data.gameID) {
     log.error("Didn't sent game ID");
@@ -98,24 +98,35 @@ joinGame = (data, socket) => {
   log.info("Player %s joined game %s", socket.id, data.gameID);
 };
 
-targetShot = (data, socket) => gameSession.gameByPlayerID(socket).targetShot();
-gameEnded = (socket, data) => socket.emit(events.GAME_ENDED, data);
-targetCreated = (socket, data) => socket.emit(events.TARGET_CREATED);
+targetShot = function (data, socket) {
+  gameSession.gameByPlayerID(socket).targetShot();
+}
+gameEnded = function (socket, data) {
+  socket.emit(events.GAME_ENDED, data);
+  targetCreated = function (socket, data) {
+    socket.emit(events.TARGET_CREATED);
+  }
+} 
 
-eventPusher = (socket, funct) => {
-  return (data) => {
+eventPusher = function (socket, funct) {
+  return function (data) {
       funct(socket, data);
     }
 };
 
-startGame = (data, socket) => {
+startGame =  function (data, socket) {
   gameSession.gameLoop(socket.id, 
     eventPusher(socket, gameEnded), 
     eventPusher(socket, targetCreated)).start();
 };
 
-connected = (socket) => defineEventHandlers(socket);
-disconnected = (socket) => gameSession.removePlayerById(socket.id);
+connected = function (socket) {
+  defineEventHandlers(socket);
+}
+
+disconnected = function (socket){
+  gameSession.removePlayerById(socket.id);
+} 
 
 exports.debug = gameSession.debugGameSession;
 exports.init = init;

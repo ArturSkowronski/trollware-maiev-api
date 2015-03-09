@@ -30,7 +30,9 @@ var createGameModel,
  *
  * @param {string} player - player which create game.
  */
-createGameModel = (player) => gameArray.push(new gameModel(player));
+createGameModel = function (player) {
+  gameArray.push(new gameModel(player));
+}
 
 ///TODO Clojure IT
 /**
@@ -77,7 +79,7 @@ gameModel = function (player) {
  *
  * @param {string} gameID - ID of game we want to select.
  */
-gameByGameID = (gameID) => {
+gameByGameID = function (gameID) {
   return gameArray[indexOfGameByGameID(gameID)];
 };
 
@@ -86,7 +88,7 @@ gameByGameID = (gameID) => {
  *
  * @param {string} playerID - ID of game we want to select.
  */
-gameByPlayerID = (playerID) => {
+gameByPlayerID = function (playerID) {
     return gameArray[indexOfGameByPlayerID(playerID)]; 
 };
 
@@ -95,8 +97,8 @@ gameByPlayerID = (playerID) => {
  *
  * @param {string} gameID - ID of game we want to select index for.
  */
-indexOfGameByGameID = (gameID) => {
-  return _.indexOf(gameArray, _.find(gameArray, (item) => {
+indexOfGameByGameID = function (gameID) {
+  return _.indexOf(gameArray, _.find(gameArray, function (item) {
     return item.id === gameID;
   }));
 };
@@ -106,8 +108,8 @@ indexOfGameByGameID = (gameID) => {
  *
  * @param {string} playerID - ID of player we want to select game index for.
  */
-indexOfGameByPlayerID = (playerID) => {
-  return _.indexOf(gameArray, _.find(gameArray, (item) => {
+indexOfGameByPlayerID = function (playerID) {
+  return _.indexOf(gameArray, _.find(gameArray, function (item) {
     return _.includes(item.players, playerID);
   }));
 };
@@ -120,7 +122,7 @@ indexOfGameByPlayerID = (playerID) => {
  * @param {string} playerID - ID of player we want to select.
  * @param {string} gameID - ID of game we want to select player for.
  */
-playerByIDByGameID = (id, gameID) => {
+playerByIDByGameID = function (id, gameID) {
   return _.find(gameByGameID(gameID).players, function (item) {
     return item === id;
   });
@@ -138,9 +140,9 @@ playerByIDByGameID = (id, gameID) => {
 */
 ///TODO How to propagate teaser to client ?
 ///Generator? Promise? Listener/Subscriber?
-gameLoop = (playerID, targetEvent, endEvent) => {
+gameLoop = function (playerID, targetEvent, endEvent) {
   return {
-    start: () => {
+    start: function () {
       var gamePromise = Q.defer();
       var selectedGame = gameByPlayerID(playerID);
       var gameSessionLoop = gameLoopObject.gameLoop(selectedGame);
@@ -152,7 +154,7 @@ gameLoop = (playerID, targetEvent, endEvent) => {
       
       gameLoopRounds(gameSessionLoop, 5000, 5, gamePromise, selectedGame, targetEvent);
       
-      gamePromise.promise.then(() => {
+      gamePromise.promise.then(function () {
         endEvent(selectedGame.resultOfGame());
       });
     }
@@ -175,9 +177,9 @@ gameLoop = (playerID, targetEvent, endEvent) => {
  * passed
  * @param {funct} targetEvent - function emitin new target to clients
  */
-gameLoopRounds = (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) => {
+gameLoopRounds = function (gameSessionLoop, delay, repetitions, promise, gameSessionObject, targetEvent) {
   var x = 0;
-  var intervalID = setInterval(() => {
+  var intervalID = setInterval(function () {
     var target = gameSessionLoop.next();
     log.debug("Received Target of Type: " + target.type);
     gameSessionObject.addTarget(target);
@@ -197,9 +199,9 @@ gameLoopRounds = (gameSessionLoop, delay, repetitions, promise, gameSessionObjec
  *
  * @param {string} playerID - Player which is removed from game.
  */
-removePlayerById = (playerID) => {
-  _.forEach(gameArray, (game) => {
-    _.remove(game.players, (player) => {
+removePlayerById = function (playerID) {
+  _.forEach(gameArray, function (game) {
+    _.remove(game.players, function (player) {
       if (player === playerID) {
         log.info("Player " + playerID + " removed from game " + game.id);
         return true;
@@ -212,7 +214,7 @@ removePlayerById = (playerID) => {
 /**
  * Debut method informing about current state of game
  */
-debugGameSession = () => {
+debugGameSession = function () {
   return gameArray;
 };
 

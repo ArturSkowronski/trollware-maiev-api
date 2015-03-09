@@ -24,8 +24,10 @@
     "winston": "^0.9.0"
   },
   "devDependencies": {
+    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony",
     "chai": "^2.1.0",
     "coveralls": "^2.11.2",
+    "expect.js": "^0.3.1",
     "gulp": "^3.8.8",
     "gulp-bump": "^0.1.11",
     "gulp-eslint": "^0.5.0",
@@ -34,9 +36,10 @@
     "gulp-plumber": "^0.6.5",
     "gulp-spawn-mocha": "^2.0.1",
     "gulp-util": "^3.0.1",
-    "istanbul": "git://github.com/gotwarlost/istanbul.git#harmony",
+    "mocha": "^2.1.0",
     "mocha-traceur": "^2.1.0",
     "mockery": "^1.4.0",
+    "rewire": "^2.3.1",
     "sinon": "^1.12.2",
     "traceur": "0.0.85"
   },
@@ -69,6 +72,6 @@
   "scripts": {
     "start": "node --harmony --use_strict --harmony_generators index.js",
     "coveralls": "gulp test && cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "test": "gulp test"
+    "test": "node --harmony ./node_modules/istanbul/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec -t 5000 test/*.js"
   }
 }
